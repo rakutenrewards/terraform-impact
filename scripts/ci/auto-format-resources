@@ -1,0 +1,35 @@
+#!/bin/bash -xe
+# ----------------------------------------------------------------------------
+#                           Auto-format Resources
+# ----------------------------------------------------------------------------
+# Description: auto-format resources
+# Parameters: None
+# ----------------------------------------------------------------------------
+
+git remote add upstream git@github.com:RakutenReady/${PIPELINE_REPOSITORY}.git
+git remote add downstream git@github.com:${PIPELINE_PR_AUTHOR}/${PIPELINE_REPOSITORY}.git
+git fetch --all || true
+if git checkout -b ${PIPELINE_PR_BRANCH} downstream/${PIPELINE_PR_BRANCH}; then
+  PUSH_TO=downstream
+elif git checkout -b ${PIPELINE_PR_BRANCH} upstream/${PIPELINE_PR_BRANCH}; then
+  PUSH_TO=upstream
+fi
+
+echo "Running make format"
+make format
+
+if [[ `git status --porcelain --untracked-files=no` ]]; then
+  echo "Changes detected"
+  # Some files have been reformatted
+  # Push a commit to the PR branch
+  git config user.name curbsidebot
+  git config user.email bot@curbside.in
+  git add -u
+  git -c color.ui=always diff --staged
+  git commit -m "Format code automatically"
+  git push $PUSH_TO HEAD:${PIPELINE_PR_BRANCH}
+  # post comment on GitHub
+  curl -H "Authorization: token ${GITHUB_TOKEN}" -X POST \
+       -d "{\"body\": \"I fixed the format of your code and pushed the result to your PR branch.\nPlease consider rebasing your PR history :blue_heart:\nAll checks are being re-executed.\"}" \
+       "https://api.github.com/repos/RakutenReady/${PIPELINE_REPOSITORY}/issues/${PIPELINE_PR_NUMBER}/comments"
+fi

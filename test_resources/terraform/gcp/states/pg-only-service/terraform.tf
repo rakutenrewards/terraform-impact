@@ -1,0 +1,1 @@
+variable "pg_version" { default = "9.6" }

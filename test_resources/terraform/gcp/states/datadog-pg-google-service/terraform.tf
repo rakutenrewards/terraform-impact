@@ -1,0 +1,1 @@
+../global_vars/terraform.tf
