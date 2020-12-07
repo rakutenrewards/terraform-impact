@@ -23,3 +23,7 @@ func runTest(t *testing.T, runnable func()) {
 
 	runnable()
 }
+
+func getPullRequestUrl() string {
+	return "https://github.com/RakutenReady/terraform-impact/pull/3"
+}

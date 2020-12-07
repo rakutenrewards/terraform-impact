@@ -1,6 +1,8 @@
 package e2etests
 
 import (
+	"fmt"
+	"os"
 	"testing"
 
 	tu "github.com/RakutenReady/terraform-impact/testutils"
@@ -16,10 +18,10 @@ func TestProgramSucceedsWithExpectedOut(t *testing.T) {
 			// normal use cases
 			{
 				[]string{
-					"-r", tu.GcpRootDir,
 					"test_resources/terraform/gcp/modules/db/pg/outputs.tf",
 					"test_resources/terraform/gcp/modules/datadog/standard_monitor/main.tf",
 					"test_resources/terraform/gcp/modules/google/runtime_config/variables.tf",
+					"-r", tu.GcpRootDir,
 				},
 				[]string{
 					tu.GcpCompanyDatadogOnlyServiceStateDir,
@@ -29,18 +31,18 @@ func TestProgramSucceedsWithExpectedOut(t *testing.T) {
 			},
 			{
 				[]string{
-					"-r", tu.GcpRootDir,
-					"-p", tu.GcpCompanyStateDir,
 					"test_resources/terraform/gcp/modules/db/pg/outputs.tf",
 					"test_resources/terraform/gcp/modules/datadog/standard_monitor/main.tf",
 					"test_resources/terraform/gcp/modules/google/runtime_config/variables.tf",
+					fmt.Sprintf("--rootdir=%v", tu.GcpRootDir),
+					fmt.Sprintf("--pattern=%v", tu.GcpCompanyStateDir),
 				},
 				[]string{tu.GcpCompanyDatadogOnlyServiceStateDir},
 			},
 			{
 				[]string{
-					"-r", tu.GcpRootDir,
 					"test_resources/terraform/gcp/modules/db/pg/outputs.tf",
+					"-r", tu.GcpRootDir,
 				},
 				[]string{
 					tu.GcpDatadogPgGoogleServiceStateDir,
@@ -50,33 +52,42 @@ func TestProgramSucceedsWithExpectedOut(t *testing.T) {
 			// symlink
 			{
 				[]string{
-					"-r", tu.GcpRootDir,
 					"test_resources/terraform/gcp/global/terraform.tf",
+					"-r", tu.GcpRootDir,
 				},
 				[]string{tu.GcpDatadogPgGoogleServiceStateDir},
 			},
 			// no result
 			{
 				[]string{
+					"test_resources/terraform/gcp/modules/datadog/standard_monitor/main.tf",
 					"-r", tu.GcpRootDir,
 					"-p", "states/path/that/does/not/exist",
-					"test_resources/terraform/gcp/modules/datadog/standard_monitor/main.tf",
 				},
 				[]string{},
 			},
 			{
 				[]string{
-					"-r", tu.GcpRootDir,
 					"not_existing",
 					"other/ansible/ardita.json",
+					"-r", tu.GcpRootDir,
+				},
+				[]string{},
+			},
+			// no result using github PR impacter
+			{
+				[]string{
+					getPullRequestUrl(),
+					"-r", tu.GcpRootDir,
+					"-u", fmt.Sprintf("%v:%v", os.Getenv("GITHUB_USERNAME"), os.Getenv("GITHUB_PASSWORD")),
 				},
 				[]string{},
 			},
 			// unused module
 			{
 				[]string{
-					"-r", tu.GcpRootDir,
 					"test_resources/terraform/gcp/modules/unused_module/output.tf",
+					"-r", tu.GcpRootDir,
 				},
 				[]string{},
 			},
@@ -93,24 +104,33 @@ func TestProgramSucceedsWithExpectedOut(t *testing.T) {
 	})
 }
 
-func TestProgramFailsBecauseOfWronglyWrittenTerraform(t *testing.T) {
+func TestProgramFailsContainsErrMsg(t *testing.T) {
 	runTest(t, func() {
 		testCases := []struct {
-			Args       []string
-			WantErrMsg string
+			Args               []string
+			WantContainsErrMsg string
 		}{
-			// failing because of inexistent modules
+			// failing because of unparseable modules
 			{
 				[]string{"some_file"},
 				"test_resources/terraform/aws/states/poorly-written-state/modules/bob",
 			},
 			{
 				[]string{
+					"whatever-file",
 					"-r", tu.TerraformRootDir,
 					"-p", "aws/states/poorly-written-state",
-					"whatever",
 				},
 				"test_resources/terraform/aws/states/poorly-written-state/modules/bob",
+			},
+			// failing because of wrong creds to access PR
+			{
+				[]string{
+					getPullRequestUrl(),
+					"-r", tu.GcpRootDir,
+					"-u", "user-65e17355-7fcc-4a83-8d25-8ce5d6064c2b:pwd123",
+				},
+				fmt.Sprintf("PR with link [%v] returned status [401]", getPullRequestUrl()),
 			},
 		}
 
@@ -120,7 +140,7 @@ func TestProgramFailsBecauseOfWronglyWrittenTerraform(t *testing.T) {
 			out, err := cmd.CombinedOutput()
 
 			assertExitErrorCodeIs1(t, err, testCase.Args)
-			assertOutContainsErrorMsg(t, out, testCase.WantErrMsg, testCase.Args)
+			assertOutContainsErrorMsg(t, out, testCase.WantContainsErrMsg, testCase.Args)
 		}
 	})
 }

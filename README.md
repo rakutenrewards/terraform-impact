@@ -8,23 +8,7 @@ Terraform Impact is a simple tool and is meant to stay that way. It does its sta
 
 ## Usage
 ```
-Terraform Impact.
-
-This tool takes a list of files as input and outputs a list of all the Terraform states
-impacted by any of those files. An impact is described as a file creation, modification
-or deletion.
-
-Usage:
-  impact [--pattern <string>] [--rootdir <dir>] <files>...
-  impact -h | --help
-  impact -v | --version
-
-Options:
-  -r --rootdir <dir>     The directory from where the state discovery begins [default: .]
-  -p --pattern <string>  A string to filter states. Only states whose path contains the
-                         string will be taken into account. [default: ]
-  -h --help              Show this screen.
-  -v --version           Show version.
+./terraform-impact -h
 ```
 
 ## Examples
@@ -82,6 +66,17 @@ In order to make the tests run from the root of the repository, the following ne
 ```
 _ "github.com/RakutenReady/terraform-impact/testutils/setup"
 ```
+
+### Github tests
+See [README.md](https://github.com/RakutenReady/terraform-impact/tree/github-test-main)
+
+To run these tests, you'll need to setup the following env vars.
+```
+GITHUB_USERNAME=<your Github username>
+GITHUB_PASSWORD=<a generated Github token>
+```
+
+Those tests are located in `e2etests` meaning it only affects `make integration-tests`
 
 ### Makefile
 Every useful commands are in the `Makefile`. Here's an explicit list:

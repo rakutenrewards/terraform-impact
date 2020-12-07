@@ -10,16 +10,21 @@ import (
 // be the one used with the `Inner Impacter` being the one
 // switched around.
 type Impacter interface {
-	List() []string
+	List() ([]string, error)
 }
 
 type ImpacterImpl struct {
 	Inner Impacter
 }
 
-func (impacter ImpacterImpl) List() []string {
+func (impacter ImpacterImpl) List() ([]string, error) {
+	innerList, innerErr := impacter.Inner.List()
+	if innerErr != nil {
+		return nil, innerErr
+	}
+
 	var result []string
-	for _, file := range impacter.Inner.List() {
+	for _, file := range innerList {
 		if file != "" {
 			result = append(result, filepath.Clean(file))
 			// ensures deleted files are taken into account
@@ -27,7 +32,7 @@ func (impacter ImpacterImpl) List() []string {
 		}
 	}
 
-	return result
+	return result, nil
 }
 
 func NewImpacter(inner Impacter) ImpacterImpl {
@@ -42,6 +47,6 @@ func NewCommandLineImpacter(files []string) CommandLineImpacter {
 	return CommandLineImpacter{files}
 }
 
-func (impacter CommandLineImpacter) List() []string {
-	return impacter.Files
+func (impacter CommandLineImpacter) List() ([]string, error) {
+	return impacter.Files, nil
 }

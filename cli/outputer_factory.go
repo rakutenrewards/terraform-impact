@@ -4,6 +4,6 @@ import (
 	"github.com/RakutenReady/terraform-impact/impact"
 )
 
-func createOutputer(options impactOptions) impact.Outputer {
+func createOutputer(options ImpactOptions) impact.Outputer {
 	return impact.NewStdOutOutputer()
 }
