@@ -47,26 +47,26 @@ func TestMatchAllDiscoveryListStatesFrom(t *testing.T) {
 	}
 }
 
-func TestDiscoveryListStatesWithMatcherFrom(t *testing.T) {
+func TestDiscoveryListStatesWithRegexpMatchers(t *testing.T) {
 	rootDir := tu.TestResourcesRootDir
 	testCases := []struct {
-		Substrings []string
-		Want       []string
+		Regexps []string
+		Want    []string
 	}{
 		{
-			[]string{"test_resources/", "test_resources/terraform", "/terraform/", ""},
+			[]string{"^test_resources/", "^test_resources/terraform", "/terraform/", "gcp|aws", ""},
 			tu.GetStates(),
 		},
 		{
-			[]string{"/aws/", "/aws/states/"},
+			[]string{"/aws/", "/aws/states/", "(a|o)ws?"},
 			tu.GetAwsStates(),
 		},
 		{
-			[]string{"/gcp/", "/gcp/states/", "/terraform/gcp/"},
+			[]string{"/gcp/", "/gcp/states/", "/terraform/gcp/", "gcp|heroku"},
 			tu.GetGcpStates(),
 		},
 		{
-			[]string{"/company", "/gcp/states/company", "/company"},
+			[]string{"/company", "/gcp/states/company", "/company", "gcp/.+/company"},
 			tu.GetGcpCompanyStates(),
 		},
 		{
@@ -85,11 +85,11 @@ func TestDiscoveryListStatesWithMatcherFrom(t *testing.T) {
 
 	assert := assert.New(t)
 	for _, testCase := range testCases {
-		for _, substring := range testCase.Substrings {
-			lister := NewDiscoveryStateLister(rootDir, substring)
+		for _, regexp := range testCase.Regexps {
+			lister := NewDiscoveryStateLister(rootDir, regexp)
 			result := lister.List()
 
-			assert.ElementsMatchf(testCase.Want, result, `DiscoveryStateLister("%v", "%v").List()`, rootDir, substring)
+			assert.ElementsMatchf(testCase.Want, result, `DiscoveryStateLister("%v", "%v").List()`, rootDir, regexp)
 		}
 	}
 }

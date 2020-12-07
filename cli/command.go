@@ -16,7 +16,7 @@ impacted by any of those files. An impact is described as a file creation, modif
 or deletion.
 
 Usage:
-  impact <files>... [--rootdir <dir>] [--pattern <string>] [--user <credentials>]
+  impact <files>... [--rootdir <dir>] [--pattern <regexp>] [--user <credentials>]
   impact -h | --help
   impact -v | --version
 
@@ -27,8 +27,8 @@ Arguments:
 
 Options:
   -r --rootdir <dir>       The directory from where the state discovery begins.
-  -p --pattern <string>    A string to filter states. Only states whose path contains the
-                           string will be taken into account.
+  -p --pattern <regexp>    A regex pattern to filter states. Only states whose path matches
+                           the pattern will be taken into account.
   -u --user <credentials>  Credentials to access GitHub pull requests. Follows the curl
                            format 'username:password'. You can also pass credentials as
                            environment variables through: GITHUB_USERNAME and

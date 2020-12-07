@@ -63,7 +63,7 @@ func (impacter GitHubPullRequestImpacter) List() ([]string, error) {
 }
 
 func buildGitHubEndpoint(url string) (string, error) {
-	re := regexp.MustCompile(`^https:\/\/github\.com\/(?P<owner>.+)\/(?P<repository>.+)\/pull\/(?P<prnumber>\d+)$`)
+	re := regexp.MustCompile(`^https://github\.com/(?P<owner>.+)/(?P<repository>.+)/pull/(?P<prnumber>\d+)$`)
 
 	matches := re.FindStringSubmatch(url)
 	if len(matches) != 4 {

@@ -38,7 +38,7 @@ terraform {
     }
 }
 ```
-The search can be further filtered by passing a `string pattern`. This makes the tool ignore all directories not containing the provided pattern in their path.
+The search can be further filtered by passing a `regexp pattern`. This makes the tool ignore all directories not matching the provided pattern in their path.
 
 ### 2. Dependency tree
 For each state, the tool recursively looks for `module` blocks and builds a dependency tree where each node contains the `path` to the module and a list of `nodes` as dependencies.

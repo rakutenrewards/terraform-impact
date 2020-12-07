@@ -16,5 +16,5 @@ func TestCreateDiscoveryStateLister(t *testing.T) {
 
 	lister := result.(impact.DiscoveryStateLister)
 	assert.Equal("RootDir", lister.RootDir)
-	assert.Equal("Pattern", lister.Substring)
+	assert.Equal("Pattern", lister.Regexp)
 }
