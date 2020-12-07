@@ -20,23 +20,24 @@ func createInnerImpacter(opts ImpactOptions) impact.Impacter {
 }
 
 func extractGitHubImpacter(opts ImpactOptions) (bool, *impact.GitHubPullRequestImpacter) {
-	if !strings.HasPrefix(opts.Files[0], "https://github.com/") {
+	if !strings.HasPrefix(opts.GetFiles()[0], "https://github.com/") {
 		return false, nil
 	}
 
-	if len(opts.Credentials) == 0 {
+	credentials := opts.GetCredentials()
+	if len(credentials) == 0 {
 		impacter := impact.NewGitHubPullRequestImpacter(opts.Files[0], "", "")
 
 		return true, &impacter
 	}
 
-	credentials := strings.SplitN(opts.Credentials, ":", 2)
-	if len(credentials) != 2 {
+	usernamePassword := strings.SplitN(credentials, ":", 2)
+	if len(usernamePassword) != 2 {
 		panic(fmt.Errorf("Invalid credentials format, use <username:password>"))
 	}
 
-	username := credentials[0]
-	password := credentials[1]
+	username := usernamePassword[0]
+	password := usernamePassword[1]
 	impacter := impact.NewGitHubPullRequestImpacter(opts.Files[0], username, password)
 
 	return true, &impacter

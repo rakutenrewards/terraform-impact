@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -24,16 +25,24 @@ func TestCreateCommandLineImpacter(t *testing.T) {
 }
 
 func TestCreateGitHubPullRequestImpacter(t *testing.T) {
+	oldUsername := os.Getenv("GITHUB_USERNAME")
+	oldPassword := os.Getenv("GITHUB_PASSWORD")
+	defer os.Setenv("GITHUB_PASSWORD", oldPassword)
+	defer os.Setenv("GITHUB_USERNAME", oldUsername)
+
 	filesWithGitHubUrl := []string{"https://github.com/bob", "whatever-comes-second", "or-third-doesnt-matter"}
 	testCases := []struct {
 		Credentials  string
+		EnvUsername  string
+		EnvPassword  string
 		WantUsername string
 		WantPassword string
 	}{
-		{"a_user@hotmail.com:nice_gh_pwd123!", "a_user@hotmail.com", "nice_gh_pwd123!"},
-		{"simple_user:simple_password", "simple_user", "simple_password"},
-		{"weird_one:because:password:is:split", "weird_one", "because:password:is:split"},
-		{"", "", ""},
+		{"a_user@hotmail.com:nice_gh_pwd123!", "", "", "a_user@hotmail.com", "nice_gh_pwd123!"},
+		{"simple_user:simple_password", "", "", "simple_user", "simple_password"},
+		{"weird_one:because:password:is:split", "", "", "weird_one", "because:password:is:split"},
+		{"", "env-user", "env-password", "env-user", "env-password"},
+		{"", "", "", "", ""},
 	}
 
 	assert := assert.New(t)
@@ -41,6 +50,8 @@ func TestCreateGitHubPullRequestImpacter(t *testing.T) {
 		opts := validImpactOptions()
 		opts.Files = filesWithGitHubUrl
 		opts.Credentials = testCase.Credentials
+		os.Setenv("GITHUB_USERNAME", testCase.EnvUsername)
+		os.Setenv("GITHUB_PASSWORD", testCase.EnvPassword)
 
 		result := createImpacter(opts)
 
