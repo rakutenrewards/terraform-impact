@@ -86,6 +86,7 @@ func TestImpact(t *testing.T) {
 
 		msg := onImpactMsg(testCase.Paths)
 		assert.Nil(err, msg)
+		assert.NotNil(result, msg)
 		assert.ElementsMatch(testCase.Want, result, msg)
 
 		stateLister.AssertExpectations(t)

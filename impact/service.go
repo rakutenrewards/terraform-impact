@@ -26,7 +26,7 @@ func NewImpactService(lister StateLister) ImpactService {
 // which contains any of the [paths] provided as function parameter.
 // Finally, returns the list of impacted state directories as (states, nil).
 // If any error arises during the process, return (nil, error).
-func (service impactServiceImpl) Impact(paths []string) (impactedStates []string, err error) {
+func (service impactServiceImpl) Impact(paths []string) ([]string, error) {
 	stateDirs := service.lister.List()
 
 	var stateNodes []*trees.Node
@@ -40,6 +40,7 @@ func (service impactServiceImpl) Impact(paths []string) (impactedStates []string
 		stateNodes = append(stateNodes, stateNode)
 	}
 
+	impactedStates := []string{}
 	for _, stateNode := range stateNodes {
 		if stateNode.AnyDependency(paths) {
 			impactedStates = append(impactedStates, stateNode.Path)
