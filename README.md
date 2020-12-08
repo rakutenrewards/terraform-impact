@@ -56,7 +56,7 @@ Important note, the dependency tree builder follows file symlinks to add them in
 Filters states list by looking if any of the input files are in the state dependency tree.
 
 ### 4. Outputs impacted states
-Takes the result from (`3. List impacted states`) and outputs it in the terminal `stdout`.
+Takes the result from (`3. List impacted states`) and outputs it in the terminal or in a file.
 
 ## Contributing
 ### Tests

@@ -24,6 +24,10 @@ func runTest(t *testing.T, runnable func()) {
 	runnable()
 }
 
+func getJsonFile() string {
+	return "test_resources/json-test-output.json"
+}
+
 func getPullRequestUrl() string {
 	return "https://github.com/RakutenReady/terraform-impact/pull/3"
 }

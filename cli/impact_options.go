@@ -6,10 +6,11 @@ import (
 )
 
 type ImpactOptions struct {
+	Files       []string `docopt:"<files>"`
 	RootDir     string   `docopt:"--rootdir"`
 	Pattern     string   `docopt:"--pattern"`
 	Credentials string   `docopt:"--user"`
-	Files       []string `docopt:"<files>"`
+	Output      string   `docopt:"--output"`
 }
 
 func (opt *ImpactOptions) GetRootDir() string {
@@ -18,6 +19,10 @@ func (opt *ImpactOptions) GetRootDir() string {
 
 func (opt *ImpactOptions) GetPattern() string {
 	return getOrDefault(opt.Pattern, "")
+}
+
+func (opt *ImpactOptions) GetOutput() string {
+	return getOrDefault(opt.Output, "")
 }
 
 func (opt *ImpactOptions) GetCredentials() string {

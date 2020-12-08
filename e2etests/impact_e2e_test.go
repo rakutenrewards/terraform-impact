@@ -104,6 +104,50 @@ func TestProgramSucceedsWithExpectedOut(t *testing.T) {
 	})
 }
 
+func TestOutputersSucceeds(t *testing.T) {
+	runTest(t, func() {
+		testCases := []struct {
+			Args []string
+			Want []string
+		}{
+			// normal use cases
+			{
+				[]string{
+					"test_resources/terraform/gcp/modules/db/pg/outputs.tf",
+					"test_resources/terraform/gcp/modules/datadog/standard_monitor/main.tf",
+					"test_resources/terraform/gcp/modules/google/runtime_config/variables.tf",
+					"-r", tu.GcpRootDir,
+					fmt.Sprintf("--output=%v", getJsonFile()),
+				},
+				[]string{
+					tu.GcpCompanyDatadogOnlyServiceStateDir,
+					tu.GcpDatadogPgGoogleServiceStateDir,
+					tu.GcpPgOnlyServiceStateDir,
+				},
+			},
+			// unused module for empty list
+			{
+				[]string{
+					"test_resources/terraform/gcp/modules/unused_module/output.tf",
+					"-r", tu.GcpRootDir,
+					fmt.Sprintf("--output=%v", getJsonFile()),
+				},
+				[]string{},
+			},
+		}
+
+		for _, testCase := range testCases {
+			cmd := execMain(testCase.Args)
+
+			out, err := cmd.CombinedOutput()
+
+			assertNoErrors(t, err, testCase.Args)
+			assertOutIsEmpty(t, out, testCase.Args)
+			assertJsonIsImpactedStates(t, testCase.Want, testCase.Args)
+		}
+	})
+}
+
 func TestProgramFailsContainsErrMsg(t *testing.T) {
 	runTest(t, func() {
 		testCases := []struct {

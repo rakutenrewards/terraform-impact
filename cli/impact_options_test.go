@@ -13,6 +13,16 @@ func TestDefaultValues(t *testing.T) {
 	assert := assert.New(t)
 	assert.Equal(".", emptyOpts.GetRootDir(), "RootDir should default to current directory")
 	assert.Equal("", emptyOpts.GetPattern(), "Pattern should default to empty string")
+	assert.Equal("", emptyOpts.GetOutput(), "Output should default to empty string")
+}
+
+func TestValues(t *testing.T) {
+	opts := validImpactOptions()
+
+	assert := assert.New(t)
+	assert.Equal(opts.RootDir, opts.GetRootDir(), "RootDir should not default")
+	assert.Equal(opts.Pattern, opts.GetPattern(), "Pattern should not default")
+	assert.Equal(opts.Output, opts.GetOutput(), "Output should not default")
 }
 
 func TestGetCredentials(t *testing.T) {

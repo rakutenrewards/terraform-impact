@@ -17,6 +17,7 @@ or deletion.
 
 Usage:
   impact <files>... [--rootdir <dir>] [--pattern <regexp>] [--user <credentials>]
+    [--output <file>]
   impact -h | --help
   impact -v | --version
 
@@ -34,6 +35,8 @@ Options:
                            environment variables through: GITHUB_USERNAME and
                            GITHUB_PASSWORD. Note that the option always takes precendence
                            over environment variables.
+  -o --output <file>       Outputs the result in the given file instead of using stdout.
+                           Available formats: Json.
   -h --help                Show this screen.
   -v --version             Show version.`
 }
@@ -51,7 +54,5 @@ func (cmd ImpactCommand) Run(opts ImpactOptions) error {
 		return err
 	}
 
-	outputer.Output(result)
-
-	return nil
+	return outputer.Output(result)
 }
