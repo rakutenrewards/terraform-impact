@@ -174,7 +174,7 @@ func TestProgramFailsContainsErrMsg(t *testing.T) {
 					"-r", tu.GcpRootDir,
 					"-u", "user-65e17355-7fcc-4a83-8d25-8ce5d6064c2b:pwd123",
 				},
-				fmt.Sprintf("PR with link [%v] returned status [401]", getPullRequestUrl()),
+				fmt.Sprintf("PR with link [%v] returned status [404]", getPullRequestUrl()),
 			},
 		}
 

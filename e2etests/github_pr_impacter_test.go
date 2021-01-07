@@ -35,7 +35,7 @@ func TestGitHubPullRequestImpacterWithInvalidAuth(t *testing.T) {
 	runTest(t, func() {
 		url := getPullRequestUrl()
 		impacter := impact.NewGitHubPullRequestImpacter(url, "user-65e17355-7fcc-4a83-8d25-8ce5d6064c2b", "pwd123")
-		wantErrMsg := fmt.Sprintf("PR with link [%v] returned status [401]", url)
+		wantErrMsg := fmt.Sprintf("PR with link [%v] returned status [404]", url)
 
 		result, err := impacter.List()
 
@@ -64,5 +64,10 @@ func getValidGitHubPrImpacter() impact.Impacter {
 	username := os.Getenv("GITHUB_USERNAME")
 	password := os.Getenv("GITHUB_PASSWORD")
 
-	return impact.NewGitHubPullRequestImpacter(getPullRequestUrl(), username, password)
+	return impact.GitHubPullRequestImpacter{
+		Url:      getPullRequestUrl(),
+		PerPage:  5,
+		Username: username,
+		Password: password,
+	}
 }
