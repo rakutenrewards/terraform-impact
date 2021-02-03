@@ -17,7 +17,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	docOpts, parseErr := docopt.ParseArgs(cmd.Usage(), args, "0.0.0-dev")
+	docOpts, parseErr := docopt.ParseArgs(cmd.Usage(), args, "1.0.0")
 	if parseErr != nil {
 		os.Exit(1)
 	}
