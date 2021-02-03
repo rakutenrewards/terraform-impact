@@ -17,7 +17,8 @@ or deletion.
 
 Usage:
   impact <files>... [--rootdir <dir>] [--pattern <regexp>] [--user <credentials>]
-    [--output <file>]
+	[--output <file>]
+  impact -l | --list-states [--rootdir <dir>] [--pattern <regexp>] [--output <file>]
   impact -h | --help
   impact -v | --version
 
@@ -37,6 +38,7 @@ Options:
                            over environment variables.
   -o --output <file>       Outputs the result in the given file instead of using stdout.
                            Available formats: Json.
+  -l --list-states         Lists the states discovered by the tool.
   -h --help                Show this screen.
   -v --version             Show version.`
 }

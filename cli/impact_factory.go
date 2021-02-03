@@ -16,11 +16,9 @@ func newImpactFactory() impactFactory {
 }
 
 func (factory impactFactoryImpl) Create(opts ImpactOptions) (impact.Impacter, impact.ImpactService, impact.Outputer) {
-	stateLister := createStateLister(opts)
 	impacter := createImpacter(opts)
+	service := createService(opts)
 	outputer := createOutputer(opts)
-
-	service := impact.NewImpactService(stateLister)
 
 	return impacter, service, outputer
 }

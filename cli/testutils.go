@@ -7,5 +7,6 @@ func validImpactOptions() ImpactOptions {
 		Pattern:     "Pattern",
 		Credentials: "user:pwd",
 		Output:      "output.json",
+		ListStates:  false,
 	}
 }

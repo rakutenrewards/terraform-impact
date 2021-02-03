@@ -10,18 +10,28 @@ import (
 )
 
 func TestCreateCommandLineImpacter(t *testing.T) {
-	opts := validImpactOptions()
-	opts.Files = []string{"File_1", "File_2", "File_3"}
-	result := createImpacter(opts)
+	testCases := []struct {
+		Files []string
+	}{
+		{[]string{"File_1", "File_2", "File_3"}},
+		{[]string{}},
+		{nil},
+	}
 
 	assert := assert.New(t)
-	assert.IsType(impact.ImpacterImpl{}, result, "Result should be of ImpacterImpl type")
+	for _, testCase := range testCases {
+		opts := validImpactOptions()
+		opts.Files = testCase.Files
+		result := createImpacter(opts)
 
-	impacter := result.(impact.ImpacterImpl)
-	assert.IsType(impact.CommandLineImpacter{}, impacter.Inner, "Impacter.Inner should be of CommandLineImpacter type")
+		assert.IsType(impact.ImpacterImpl{}, result, "Result should be of ImpacterImpl type")
 
-	inner := impacter.Inner.(impact.CommandLineImpacter)
-	assert.ElementsMatch(opts.Files, inner.Files)
+		impacter := result.(impact.ImpacterImpl)
+		assert.IsType(impact.CommandLineImpacter{}, impacter.Inner, "Impacter.Inner should be of CommandLineImpacter type")
+
+		inner := impacter.Inner.(impact.CommandLineImpacter)
+		assert.ElementsMatch(opts.Files, inner.Files)
+	}
 }
 
 func TestCreateGitHubPullRequestImpacter(t *testing.T) {

@@ -9,7 +9,7 @@ import (
 	_ "github.com/RakutenReady/terraform-impact/testutils/setup"
 )
 
-func TestProgramSucceedsWithExpectedOut(t *testing.T) {
+func TestImpactSucceedsWithExpectedOut(t *testing.T) {
 	runTest(t, func() {
 		testCases := []struct {
 			Args []string
@@ -48,6 +48,13 @@ func TestProgramSucceedsWithExpectedOut(t *testing.T) {
 					tu.GcpDatadogPgGoogleServiceStateDir,
 					tu.GcpPgOnlyServiceStateDir,
 				},
+			},
+			{
+				[]string{
+					"-r", tu.GcpCompanyStateDir,
+					"-l",
+				},
+				tu.GetGcpCompanyStates(),
 			},
 			// symlink
 			{
@@ -104,7 +111,7 @@ func TestProgramSucceedsWithExpectedOut(t *testing.T) {
 	})
 }
 
-func TestOutputersSucceeds(t *testing.T) {
+func TestImpactOutputersSucceeds(t *testing.T) {
 	runTest(t, func() {
 		testCases := []struct {
 			Args []string
@@ -124,6 +131,14 @@ func TestOutputersSucceeds(t *testing.T) {
 					tu.GcpDatadogPgGoogleServiceStateDir,
 					tu.GcpPgOnlyServiceStateDir,
 				},
+			},
+			{
+				[]string{
+					"-r", tu.GcpRootDir,
+					"-l",
+					fmt.Sprintf("--output=%v", getJsonFile()),
+				},
+				tu.GetGcpStates(),
 			},
 			// unused module for empty list
 			{
@@ -148,7 +163,7 @@ func TestOutputersSucceeds(t *testing.T) {
 	})
 }
 
-func TestProgramFailsContainsErrMsg(t *testing.T) {
+func TestImpactFailsContainsErrMsg(t *testing.T) {
 	runTest(t, func() {
 		testCases := []struct {
 			Args               []string
@@ -176,6 +191,15 @@ func TestProgramFailsContainsErrMsg(t *testing.T) {
 				},
 				fmt.Sprintf("PR with link [%v] returned status [404]", getPullRequestUrl()),
 			},
+			// failing because passing files and -l option
+			{
+				[]string{
+					"should/fail/because/files/are/note/allowed/with/l/opt",
+					"-l",
+					"-r", tu.GcpRootDir,
+				},
+				fmt.Sprintf(" "),
+			},
 		}
 
 		for _, testCase := range testCases {
@@ -185,44 +209,6 @@ func TestProgramFailsContainsErrMsg(t *testing.T) {
 
 			assertExitErrorCodeIs1(t, err, testCase.Args)
 			assertOutContainsErrorMsg(t, out, testCase.WantContainsErrMsg, testCase.Args)
-		}
-	})
-}
-
-func TestProgramSucceedsWithHelpMessage(t *testing.T) {
-	runTest(t, func() {
-		testCases := []e2eArgsCase{
-			{[]string{"-h"}},
-			{[]string{"--help"}},
-			{[]string{"bob", "ok", "--help", "bye"}},
-			{[]string{"bob", "ok", "-h", "bye"}},
-		}
-
-		for _, testCase := range testCases {
-			cmd := execMain(testCase.Args)
-
-			out, err := cmd.CombinedOutput()
-
-			assertOutIsHelp(t, out, testCase.Args)
-			assertNoErrors(t, err, testCase.Args)
-		}
-	})
-}
-
-func TestProgramFailsWithHelpMessage(t *testing.T) {
-	runTest(t, func() {
-		testCases := []e2eArgsCase{
-			{[]string{"-j", "-e"}},
-			{[]string{}},
-		}
-
-		for _, testCase := range testCases {
-			cmd := execMain(testCase.Args)
-
-			out, err := cmd.CombinedOutput()
-
-			assertOutIsHelp(t, out, testCase.Args)
-			assertExitErrorCodeIs1(t, err, testCase.Args)
 		}
 	})
 }

@@ -40,7 +40,7 @@ func TestImpact(t *testing.T) {
 	builder.On("Build", "root-a", mock.Anything).Return(rootA, nil)
 	builder.On("Build", "root-b", mock.Anything).Return(rootB, nil)
 
-	service := impactServiceImpl{stateLister, builder}
+	service := ImpactServiceImpl{stateLister, builder}
 
 	testCases := []struct {
 		Paths []string
@@ -101,7 +101,7 @@ func TestImpactWithEmptyStateDirsList(t *testing.T) {
 	stateLister.On("List").Return([]string{})
 	builder.On("Build", mock.Anything, mock.Anything).Return(nil, nil)
 
-	service := impactServiceImpl{stateLister, builder}
+	service := ImpactServiceImpl{stateLister, builder}
 
 	args := []string{"whatever", "it does not matter"}
 	result, err := service.Impact(args)
@@ -125,7 +125,7 @@ func TestImpactWithEmptyDependenciesTrees(t *testing.T) {
 	stateLister.On("List").Return([]string{"root", "root-a", "root-b"})
 	builder.On("Build", mock.Anything, mock.Anything).Return(emptyNode, nil)
 
-	service := impactServiceImpl{stateLister, builder}
+	service := ImpactServiceImpl{stateLister, builder}
 
 	args := []string{"whatever", "it does not matter"}
 	result, err := service.Impact(args)
@@ -149,7 +149,7 @@ func TestImpactWithErrorWhenBuildingDependenciesTrees(t *testing.T) {
 	stateLister.On("List").Return([]string{"root", "root-b"})
 	builder.On("Build", mock.Anything, mock.Anything).Return((*trees.Node)(nil), fmt.Errorf(wantErrMsg))
 
-	service := impactServiceImpl{stateLister, builder}
+	service := ImpactServiceImpl{stateLister, builder}
 
 	args := []string{"whatever", "it does not matter"}
 	result, err := service.Impact(args)

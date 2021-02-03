@@ -11,6 +11,7 @@ type ImpactOptions struct {
 	Pattern     string   `docopt:"--pattern"`
 	Credentials string   `docopt:"--user"`
 	Output      string   `docopt:"--output"`
+	ListStates  bool     `docopt:"--list-states"`
 }
 
 func (opt *ImpactOptions) GetRootDir() string {

@@ -20,6 +20,9 @@ func createInnerImpacter(opts ImpactOptions) impact.Impacter {
 }
 
 func extractGitHubImpacter(opts ImpactOptions) (bool, *impact.GitHubPullRequestImpacter) {
+	if len(opts.GetFiles()) == 0 {
+		return false, nil
+	}
 	if !strings.HasPrefix(opts.GetFiles()[0], "https://github.com/") {
 		return false, nil
 	}
