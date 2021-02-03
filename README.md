@@ -6,6 +6,8 @@ Terraform Impact is a simple tool and is meant to stay that way. It does its sta
 3. Lists states impacted by any of the input files
 4. Outputs impacted states
 
+You can also only lists all terraform states using `-l`.
+
 ## Usage
 ```
 ./terraform-impact -h
@@ -19,6 +21,13 @@ impact \
   --pattern /gcp/ \
   test_resources/terraform/gcp/modules/unused_module/outputs.tf \
   test_resources/terraform/gcp/modules/google/runtime_config/variables.tf
+```
+
+For only listing states:
+```
+impact -l
+  -r ./test_resources/terraform \
+  -p /gcp/
 ```
 
 
@@ -57,6 +66,15 @@ Filters states list by looking if any of the input files are in the state depend
 
 ### 4. Outputs impacted states
 Takes the result from (`3. List impacted states`) and outputs it in the terminal or in a file.
+
+## Release process
+Use the automatic [Jenkins job](https://jk.rakutenready.com/view/All%20Jobs/job/Jobs/job/terraform-impact/job/Release%20version/).
+
+The process does the following:
+1. Update the version in `main.go`
+2. Push a branch named after the version
+3. Update the version back to `dev` in `main.go`
+4. Push main branch
 
 ## Contributing
 ### Tests

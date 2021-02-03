@@ -1,0 +1,44 @@
+#!/bin/bash -e
+# ----------------------------------------------------------------------------
+#                           update-version
+# ----------------------------------------------------------------------------
+# Description: for the update-version-job
+# Parameters: major|minor|patch
+# ----------------------------------------------------------------------------
+
+INCREMENT_VERSION=$1
+if [[ !("${INCREMENT_VERSION}" == "major" || "${INCREMENT_VERSION}" == "minor" || "${INCREMENT_VERSION}" == "patch") ]]; then
+  echo
+  echo "Update version needs env var INCREMENT_VERSION in [major, minor, patch]"
+  echo
+  exit 1
+fi
+
+# semver helps with proper versioning
+WORKDIR=`git rev-parse --short HEAD`
+mkdir -p ${WORKDIR}
+wget -O "${WORKDIR}/semver" https://raw.githubusercontent.com/fsaintjacques/semver-tool/3.2.0/src/semver
+chmod +x "${WORKDIR}/semver"
+
+# versions using semver
+CURRENT_VERSION=`sed -n 's/^.*\([[:digit:]]\+\.[[:digit:]]\+\.[[:digit:]]\+\)-dev.*$/\1/p' main.go`
+if [[ "${INCREMENT_VERSION}" == "patch" ]]; then
+  NEW_VERSION="${CURRENT_VERSION}"
+else
+  NEW_VERSION=`${WORKDIR}/semver bump ${INCREMENT_VERSION} ${CURRENT_VERSION}`
+fi
+DEV_VERSION=`${WORKDIR}/semver bump patch ${NEW_VERSION}`-dev
+
+# release new version
+sed -i "s/${CURRENT_VERSION}-dev/${NEW_VERSION}/g" main.go
+git add main.go
+git commit -m "Release ${NEW_VERSION}"
+git push -u origin HEAD:${NEW_VERSION}
+
+# back on dev version on main branch
+sed -i "s/${NEW_VERSION}/${DEV_VERSION}/g" main.go
+git add main.go
+git commit -m "Back on dev version ${DEV_VERSION}"
+git push
+
+rm -r ${WORKDIR}
