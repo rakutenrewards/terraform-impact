@@ -39,6 +39,6 @@ git push -u origin HEAD:${NEW_VERSION}
 sed -i "s/${NEW_VERSION}/${DEV_VERSION}/g" main.go
 git add main.go
 git commit -m "Back on dev version ${DEV_VERSION}"
-git push
+git push origin main
 
 rm -r ${WORKDIR}
