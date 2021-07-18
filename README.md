@@ -1,5 +1,6 @@
 # terraform-impact :boom:
-Terraform Impact is a simple tool and is meant to stay that way. It does its static analysis in 4 basic steps:
+Terraform Impact is a command line tool that can be used to statically analyze the impact of a GitHub PR on the terraform states contained in a directory.
+It does its static analysis in 4 basic steps:
 
 1. Lists all terraform states
 2. For each terraform state, creates a file and module dependency tree.
